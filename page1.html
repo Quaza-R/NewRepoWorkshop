@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(45deg, #ff7e5f, #feb47b, #ff7e5f, #feb47b);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .box {
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            width: 40%;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #ff7e5f;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+            transition: background-color 0.8s ease;
+        }
+
+        button:hover {
+            background-color: #feb47b;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Style for QR code container */
+        .qr-code-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .qr-code {
+            margin-bottom: 10px;
+        }
+    </style>
+
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+</head>
+
+<body>
+    <h1>QR Code Generator</h1>
+    <div class="container">
+        <div class="box">
+            <h2>Generate a QR Code</h2>
+            <input type="text" id="qr-input" placeholder="Enter text or URL" style="width: 80%; padding: 10px;">
+            <button onclick="generateQRCode()">Generate</button>
+            <div id="qr-code-container" class="qr-code-container"></div>
+        </div>
+        <button onclick="window.location.href='page2.html'">View All QR Codes</button>
+    </div>
+
+    <script>
+        // Function to generate a unique numeric ID for each QR code
+        function generateUniqueId() {
+            // Get the last ID used from localStorage, or start from 1 if none exists
+            let lastId = localStorage.getItem('lastQrCodeId');
+            if (!lastId) {
+                lastId = 1;
+            } else {
+                lastId = parseInt(lastId) + 1;
+            }
+            localStorage.setItem('lastQrCodeId', lastId); // Save the new ID back to localStorage
+            return lastId;
+        }
+
+        // Function to generate the QR code based on user input
+        function generateQRCode() {
+            const inputText = document.getElementById('qr-input').value;
+            const qrCodeContainer = document.getElementById('qr-code-container');
+            
+            if (inputText) {
+                // Clear any existing QR codes
+                qrCodeContainer.innerHTML = ''; 
+
+                // Generate a unique numeric ID for the QR code
+                const qrCodeId = generateUniqueId();
+
+                // Create the QR code
+                new QRCode(qrCodeContainer, {
+                    text: inputText,
+                    width: 150,
+                    height: 150
+                });
+
+                // Save the QR code details with the unique ID
+                const qrCodeDetails = {
+                    id: qrCodeId,
+                    name: inputText,
+                    content: inputText
+                };
+
+                // Retrieve existing QR codes from localStorage, if any
+                let qrCodes = JSON.parse(localStorage.getItem('qrCodes')) || [];
+
+                // Add the new QR code details to the list
+                qrCodes.push(qrCodeDetails);
+
+                // Save the updated QR codes back to localStorage
+                localStorage.setItem('qrCodes', JSON.stringify(qrCodes));
+
+                // Display the QR code with its unique numeric ID
+                const qrCodeElement = document.createElement('div');
+                qrCodeElement.classList.add('qr-code');
+                qrCodeElement.innerHTML = `
+                    <h3>QR Code ID: ${qrCodeDetails.id}</h3>
+                    <p>${qrCodeDetails.name}</p>
+                    <div id="qr-${qrCodeDetails.id}"></div>
+                `;
+                qrCodeContainer.appendChild(qrCodeElement);
+
+            } else {
+                alert('Please enter some text or URL to generate a QR code!');
+            }
+        }
+    </script>
+</body>
+</html>

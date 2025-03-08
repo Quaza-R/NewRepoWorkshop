@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Generated QR Codes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(45deg, #ff7e5f, #feb47b, #ff7e5f, #feb47b);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .qr-box {
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 10px;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #ff7e5f;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+            transition: background-color 0.8s ease;
+        }
+
+        button:hover {
+            background-color: #feb47b;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+</head>
+
+<body>
+    <h1>All Generated QR Codes</h1>
+
+    <div class="container" id="qr-codes-container"></div>
+
+    <button onclick="window.location.href='page1.html'">Back to Generator</button>
+
+    <script>
+        // Function to display all QR codes stored in localStorage
+        function displayAllQRCodeDetails() {
+            // Retrieve stored QR codes from localStorage
+            const qrCodes = JSON.parse(localStorage.getItem('qrCodes')) || [];
+            const container = document.getElementById('qr-codes-container');
+            container.innerHTML = ''; // Clear any existing content
+
+            // Check if there are any QR codes
+            if (qrCodes.length > 0) {
+                qrCodes.forEach(function(qrCode) {
+                    // Create a div for each QR code
+                    const qrBox = document.createElement('div');
+                    qrBox.classList.add('qr-box');
+
+                    // Display QR code details (name and ID)
+                    qrBox.innerHTML = `
+                        <h3>QR Code Name: ${qrCode.name}</h3>
+                        <p>Unique ID: ${qrCode.id}</p>
+                    `;
+
+                    // Create QR code image dynamically
+                    const qrCodeElement = document.createElement('div');
+                    new QRCode(qrCodeElement, {
+                        text: qrCode.content,
+                        width: 150,
+                        height: 150
+                    });
+
+                    // Append QR code image to qrBox
+                    qrBox.appendChild(qrCodeElement);
+                    container.appendChild(qrBox);
+                });
+            } else {
+                container.innerHTML = "<p>No QR codes generated yet!</p>";
+            }
+        }
+
+        // Call function to display QR codes when the page loads
+        window.onload = displayAllQRCodeDetails;
+    </script>
+</body>
+</html>
